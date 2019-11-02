@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Register User</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Participant Registration</h2>
+      <form action="/action_page.php" id="form">
+              <div id="incomplete">
+
+        <div class="form-group">
+          <label for="name">Name:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            placeholder="Enter name"
+            name="name"
+          />
+        </div>
+        <div class="form-group">
+          <label for="registerno">Register No:</label>
+          <input
+            class="form-control"
+            id="registerno"
+            placeholder="Enter register no"
+            name="registerno"
+          />
+        </div>
+        <div class="form-group">
+          <label for="phone">Mobile Number:</label>
+          <input
+            class="form-control"
+            id="phone"
+            placeholder="Enter mobile number"
+            name="phone"
+          />
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            placeholder="Enter email"
+            name="email"
+          />
+        </div>
+        <div class="form-group">
+          <label for="institute">Institute:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="institute"
+            placeholder="Enter institute name"
+            name="institute"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="degree">Degree:</label>
+          <input
+            class="form-control"
+            id="degree"
+            placeholder="Enter degree"
+            name="degree"
+          />
+        </div>
+
+        <button id="submitBtn" type="submit" class="btn btn-primary" onclick="submitDetails()">
+          Submit
+        </button>
+        </div><div id="oncomplete" style="display:none;">
+          <div style="height:30px;"></div>
+          <div id="qrcode"></div>
+          <div style="height:30px;"></div>
+          <h2 id="qrCodeText"></h2>
+                    <div style="height:30px;"></div>
+          <button  class="btn btn-default" onclick="resetAndReload()">
+            Add another user
+          </button>
+        </div>
+        </div>
+      </form>
+      </div>
+    </div>
+    <script src="./jquery.min.js"></script>
+    <script src="./qrcode.min.js"></script>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.2.3/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.2.3/firebase-firestore.js"></script>
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyDWfogtN7Sncy_9WvstVLI89hEGcUsPpRY",
+        authDomain: "atlas-267b9.firebaseapp.com",
+        databaseURL: "https://atlas-267b9.firebaseio.com",
+        projectId: "atlas-267b9",
+        storageBucket: "atlas-267b9.appspot.com",
+        messagingSenderId: "408612600901",
+        appId: "1:408612600901:web:6829ae17d684ab4a24772c"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      function randomIntFromInterval(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+      }
+      function resetAndReload() {
+        var form = document.getElementById("form").reset();
+        var oncomplete = document.getElementById("oncomplete");
+        oncomplete.style.display = "none";
+        incomplete.style.display = 'block';
+        location.reload();
+        var button = document.getElementById("submitBtn");
+        button.disabled = false;
+        button.innerText = 'Submit';
+      }
+      function submitDetails() {
+        var uniqueId = `USER${randomIntFromInterval(100, 1000)}`;
+        var name = document.getElementById("name").value;
+        var registerno = document.getElementById("registerno").value;
+        var phone = document.getElementById("phone").value;
+        var email = document.getElementById("email").value;
+        var institute = document.getElementById("institute").value;
+        var degree = document.getElementById("degree").value;
+        var db = firebase.firestore();
+        var button = document.getElementById("submitBtn");
+        button.disabled = true;
+        button.innerText = 'Submitting...';
+        db.collection("users")
+          .doc(uniqueId)
+          .set({
+            id: uniqueId,
+            name: name,
+            registerno: registerno,
+            phone: phone,
+            email: email,
+            institute: institute,
+            degree: degree
+          })
+          .then(result => {
+            alert("Successfully added user");
+            var oncomplete = document.getElementById("oncomplete");
+            var incomplete = document.getElementById('incomplete');
+            oncomplete.style.display = "block";
+            incomplete.style.display = 'none';
+            new QRCode(document.getElementById("qrcode"), uniqueId);
+            document.getElementById('qrCodeText').innerText = uniqueId;
+          })
+          .catch(err => {
+            alert("Failed to add user" + err);
+          });
+      }
+    </script>
+  </body>
+</html>
